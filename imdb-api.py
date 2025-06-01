@@ -14,8 +14,9 @@ def search():
         msg = {"error": "The query parameter must contain the information to be searched for."}
         return jsonify(msg), STATUS_CODE_ERROR
 
-    query = f'"{query.replace("%20", " ")}"'
+    query = f'{query.replace("%20", " ")}'
     url = f'{URL_SEARCH_IMDB}{query}'
+    print(f"URL: {url}")
     res = requests.get(url, headers=headers, timeout=10)
 
     elements = []
@@ -92,39 +93,33 @@ def filmById():
 
 def web_scrapping_imdb_search_page(htmlText):
     soup = BeautifulSoup(htmlText, "html.parser")
-    # Encontrar todas las etiquetas con clase 'mc-title'
-    imdbRawElements = soup.find_all(class_='ipc-metadata-list-summary-item ipc-metadata-list-summary-item--click find-result-item find-title-result')
+    imdbRawElements = soup.select("li.find-result-item")
 
-    # Crear una lista para almacenar los datos de los elementos encontrados
     imdbElements = []
 
-    # Comprobamos si no hay resultados
     noResults = soup.find('div', string=re.compile(r"No se han encontrado resultados para?"))
-
-    # Extraer títulos y URLs de las películas y agregar a la lista
     if noResults:
         return imdbElements
-    elif imdbRawElements: # Hemos ido a la pantalla de búsqueda porque hay más de un resultado
-        for filmElement in imdbRawElements:
+
+    for filmElement in imdbRawElements:
+        try:
             # Image
-            posterElement = filmElement.find('div', class_="sc-daafffbc-0 eBTIIV")
-            image = posterElement.find_next('img')['src']
+            img = filmElement.find("img")
+            image = img["src"] if img else ""
 
-            # URL
-            titleContainer = filmElement.find('div', class_="ipc-metadata-list-summary-item__c")
-            titleElement = titleContainer.find('div', class_="ipc-metadata-list-summary-item__tc")
-            linkOnImage = titleElement.find('a')
-            url = re.sub(r"/\?ref_[^/]+", '', f"{URL_IMDB_BASE}{linkOnImage['href']}")
-            url = f'{url}/'
+            # URL y título
+            a_tag = filmElement.find("a", href=True)
+            title = a_tag.get_text(strip=True)
+            url = re.sub(r"/\?ref_[^/]+", "", URL_IMDB_BASE.replace("/es-es", "") + a_tag["href"]) + "/"
 
-            # Title
-            title = linkOnImage.get_text().rstrip()
+            # Año
+            year_span = filmElement.select_one("span.ipc-metadata-list-summary-item__li")
+            year = year_span.get_text(strip=True)[:4] if year_span else ""
 
-            # Year
-            yearElement = titleElement.find_next(class_='ipc-metadata-list-summary-item__li')
-            year = yearElement.get_text()[:4]
-                
             imdbElements.append([title, url, year, image])
+        except Exception as e:
+            print("Error procesando un elemento:", e)
+
     return imdbElements
 
 def web_scrapping_imdb_main_page(htmlText):

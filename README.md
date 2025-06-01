@@ -18,7 +18,7 @@ Está preparada tanto para la ejecución en local, como para crear una imagen en
 | ------ | ----------- | ---------------------------------------------------------------------------- | --------------------------------------------------------- |
 | GET    | /api/search | `query=${patrón a buscar}` | Busca películas y series por título |
 | GET    | /api/film   | `id=${id}`                                             | Obtiene datos de una película o serie mediante un ID      |
-| GET   | /api/film   | `url="https://www.filmaffinity.com/es/film819745.html"` | Obtiene datos de una película o serie mediante una URL    |
+| GET    | /api/film   | `url="https://www.filmaffinity.com/es/film819745.html"` | Obtiene datos de una película o serie mediante una URL    |
 
 ## Ejemplos de uso
 
@@ -81,7 +81,7 @@ GET [http://localhost:22048/api/film?id=0169364](http://localhost:22049/api/film
 
 ### Búsqueda de una película a través de su URL
 
-GET [http://localhost:22049/api/film?url=%22https://www.imdb.com/title/tt0169364/%22](http://localhost:22049/api/film?url=%22https://www.imdb.com/title/tt0169364/%22)
+GET [http://localhost:22048/api/film?url=%22https://www.imdb.com/title/tt0169364/%22](http://localhost:22049/api/film?url=%22https://www.imdb.com/title/tt0169364/%22)
 
 ```json
 {
