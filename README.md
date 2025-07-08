@@ -1,3 +1,6 @@
+> [!CAUTION]
+> Este proyecto se encuentra descontinuado
+
 # imdb-api
 API REST no oficial de IMDb en castellano. Desarrollada desde cero en python.
 
